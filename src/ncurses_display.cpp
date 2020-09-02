@@ -69,7 +69,6 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,
   mvwprintw(window, row, time_column, "TIME+");
   mvwprintw(window, row, command_column, "COMMAND");
   wattroff(window, COLOR_PAIR(2));
-  //std::cout << "Starting getting details for pids..." << std::endl;
   for (int i = 0; i < n; ++i) {
     wmove(window, row + 1, pid_column);
     wclrtoeol(window);
