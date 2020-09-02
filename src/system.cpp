@@ -20,28 +20,28 @@ Processor& System::Cpu() { return cpu_; }
 
 // TODO: Return a container composed of the system's processes
 vector<Process>& System::Processes() {
-  	vector<Process> processes{};
-	vector<int> pids = LinuxParser::Pids();
-  	for(auto& pid : pids){
-      bool found = false;
-      for(auto& process : processes_){
-        if(pid == process.Pid()){
-          process.Update();
-          processes.push_back(process);
-          found = true;
-          break;
-        }
-      }
-      
-      if(!found){
-      	Process process(pid);
-      	processes.push_back(process);
+  vector<Process> processes{};
+  vector<int> pids = LinuxParser::Pids();
+  for(auto& pid : pids){
+    bool found = false;
+    for(auto& process_ : processes_){
+      if(pid == process.Pid()){
+        process.Update();
+        processes.push_back(process);
+        found = true;
+        break;
       }
     }
+      
+    if(!found){
+      Process process(pid);
+      processes.push_back(process);
+    }
+  }
   
-  	std::sort(processes.rbegin(), processes.rend());
-  	processes_ = processes;
-  	return processes_;
+  std::sort(processes.rbegin(), processes.rend());
+  processes_ = processes;
+  return processes_;
 }
 
 // TODO: Return the system's kernel identifier (string)
