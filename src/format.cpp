@@ -11,7 +11,7 @@ using std::string;
 string Format::ElapsedTime(long seconds) {
 	char buffer [9];
   	long minutes = seconds / 60;
-    int hours = minutes / 60;
+    	int hours = minutes / 60;
 	seconds -= minutes * 60;
   	minutes -= hours * 60;
   	snprintf (buffer, 9, "%.2d:%.2d:%.2d", hours, (int) minutes, (int) seconds);
