@@ -69,14 +69,25 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,
   mvwprintw(window, row, time_column, "TIME+");
   mvwprintw(window, row, command_column, "COMMAND");
   wattroff(window, COLOR_PAIR(2));
+  //std::cout << "Starting getting details for pids..." << std::endl;
   for (int i = 0; i < n; ++i) {
+    wmove(window, row + 1, pid_column);
+    wclrtoeol(window);
     mvwprintw(window, ++row, pid_column, to_string(processes[i].Pid()).c_str());
+    //Clear previous user on this line (i.e. In-case the processes change order in terms of CPU Utilization) 
+    wclrtoeol(window);
     mvwprintw(window, row, user_column, processes[i].User().c_str());
     float cpu = processes[i].CpuUtilization() * 100;
+    //Clear previous cpu usage on this line (i.e. In-case the processes change order in terms of CPU Utilization) 
+    wclrtoeol(window);
     mvwprintw(window, row, cpu_column, to_string(cpu).substr(0, 4).c_str());
+    //Clear previous ram usage on this line (i.e. In-case the processes change order in terms of CPU Utilization) 
+    wclrtoeol(window);
     mvwprintw(window, row, ram_column, processes[i].Ram().c_str());
     mvwprintw(window, row, time_column,
               Format::ElapsedTime(processes[i].UpTime()).c_str());
+    //Clear previous command on this line (i.e. In-case the processes change order in terms of CPU Utilization) 
+    wclrtoeol(window);
     mvwprintw(window, row, command_column,
               processes[i].Command().substr(0, window->_maxx - 46).c_str());
   }
@@ -98,6 +109,7 @@ void NCursesDisplay::Display(System& system, int n) {
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
     box(system_window, 0, 0);
     box(process_window, 0, 0);
+    
     DisplaySystem(system, system_window);
     DisplayProcesses(system.Processes(), process_window, n);
     wrefresh(system_window);
