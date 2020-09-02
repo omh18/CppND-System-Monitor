@@ -27,7 +27,7 @@ vector<Process>& System::Processes() {
     for(auto& process_ : processes_){
       if(pid == process_.Pid()){
         process_.Update();
-        processes.push_back(process);
+        processes.push_back(process_);
         found = true;
         break;
       }
