@@ -25,8 +25,8 @@ vector<Process>& System::Processes() {
   for(auto& pid : pids){
     bool found = false;
     for(auto& process_ : processes_){
-      if(pid == process.Pid()){
-        process.Update();
+      if(pid == process_.Pid()){
+        process_.Update();
         processes.push_back(process);
         found = true;
         break;
