@@ -21,27 +21,48 @@ Processor& System::Cpu() { return cpu_; }
 // TODO: Return a container composed of the system's processes
 vector<Process>& System::Processes() {
   vector<Process> processes{};
-  vector<int> pids = LinuxParser::Pids();
-  for(auto& pid : pids){
-    bool found = false;
-    for(auto& process_ : processes_){
-      if(pid == process_.Pid()){
-        process_.Update();
-        processes.push_back(process_);
-        found = true;
-        break;
+  processes.reserve(LinuxParser::TotalProcesses());
+	vector<int> pids = LinuxParser::Pids();
+  	for(auto& pid : pids){
+      // Uncomment below if Process::Update() working
+      /*bool found = false;
+      for(auto process : processes_){
+        if(pid == process.Pid()){
+          // It appears that some processes expire in between call to LinuxParser::Pids(), and this code
+          // Hence, exceptions (where [pid] file no longer exists) are caught, using a std::invalid_argument exception added in code
+          try{
+            process.Update();
+            processes.push_back(process);
+            found = true;
+            break;
+          }
+
+          catch(std::invalid_argument&){
+            found = true;
+            break;
+          }
+        }
       }
-    }
       
-    if(!found){
-      Process process(pid);
-      processes.push_back(process);
+      if(!found){*/
+
+      // It appears that some processes expire in between call to LinuxParser::Pids(), and this code
+      // Hence, exceptions (where [pid] file no longer exists) are caught, using a std::invalid_argument exception added in code
+      // These processes are then skipped, i.e. not added to System::processes_
+      // Lead to a std::bad_alloc, SIGABRT or SIGSEV error
+      try{
+      	Process process(pid);
+        processes.push_back(process);
+      }
+
+      catch(const std::invalid_argument&){}
+      //} <-- Uncomment if Process::Update() working
     }
-  }
-  
-  std::sort(processes.rbegin(), processes.rend());
-  processes_ = processes;
-  return processes_;
+
+    // Sort by processes by CPU Utilization
+  	std::sort(processes.rbegin(), processes.rend());
+  	processes_ = processes;
+  	return processes_;
 }
 
 // TODO: Return the system's kernel identifier (string)
