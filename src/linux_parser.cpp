@@ -2,6 +2,10 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
+#include <exception>
+// Used exception handling to deal with error, likely due to expiration of [pid] between calls to Pids()
+// and calls to Command(int pid), Ram(int pid), Uid(int pid), User(int pid)
+// as well as possibly, UpTime(int pid) and ActiveJiffies(int pid)
 
 #include "linux_parser.h"
 
@@ -90,6 +94,8 @@ float LinuxParser::MemoryUtilization() {
       }
     }
   }
+  // Throw exception if file not found, or MemFree not gotten;
+  throw std::invalid_argument("MemUtil"); 
 }
 
 // TODO: Read and return the system uptime
@@ -124,6 +130,9 @@ long LinuxParser::Jiffies() {
 
 // TODO: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
+// Exception not added, but variable in Process::Process for which
+// this function is used (CpuUtilization_) is last to be initialised, 
+// exception likely to already be caught for Process::Ram_, Uid(), Process::User_, or Process::Command_ instead
 long LinuxParser::ActiveJiffies(int pid) {
   string PID = '/' + to_string(pid);
   string line;
@@ -149,6 +158,11 @@ long LinuxParser::ActiveJiffies(int pid) {
       }
     }
   }
+
+  /*else{
+    //Throw exception to catch if file did not open
+  }*/
+
   return jiffies;
 }
 
@@ -201,6 +215,8 @@ int LinuxParser::TotalProcesses() {
       }
     }
   }
+  // Does not throw exception, can delete throw
+  throw std::invalid_argument("TotProc"); 
 }
 
 // TODO: Read and return the number of running processes
@@ -219,6 +235,8 @@ int LinuxParser::RunningProcesses() {
       }
     }
   }
+  // Does not throw exception, can delete throw
+  throw std::invalid_argument("Proc_running"); 
 }
 
 // TODO: Read and return the command associated with a process
@@ -232,6 +250,8 @@ string LinuxParser::Command(int pid) {
       return line;
     }
   }
+  // Throw exception if file does not open, or command not found
+  throw std::invalid_argument("Command"); 
 }
 
 // TODO: Read and return the memory used by a process (in MB)
@@ -254,6 +274,8 @@ string LinuxParser::Ram(int pid) {
       }
     }
   }
+  // Throw exception if file is not open or VMSize not found
+  throw std::invalid_argument("Ram"); 
 }
 
 // TODO: Read and return the user ID associated with a process
@@ -275,6 +297,8 @@ string LinuxParser::Uid(int pid) {
       }
     }
   }
+  // Throw exception if file is not open or Uid is not found
+  throw std::invalid_argument("Uid"); 
 }
 
 // TODO: Read and return the user associated with a process
@@ -297,10 +321,15 @@ string LinuxParser::User(int pid) {
       }
     }
   }
+  // Throw exception if file is not open or User is not found
+  throw std::invalid_argument("User"); 
 }
 
 // TODO: Read and return the uptime of a process (in seconds)
 // REMOVE: [[maybe_unused]] once you define the function
+// Exception not added, but variable in Process::Process for which
+// this function is used (CpuUtilization_) is last to be initialised, 
+// exception likely to already be caught for Process::Ram_, Uid(), Process::User_, or Process::Command_ instead
 long LinuxParser::UpTime(int pid) { 
   string PID = '/' + to_string(pid);
   string line;
@@ -313,7 +342,7 @@ long LinuxParser::UpTime(int pid) {
     if (std::getline(filestream, line)) {
       std::istringstream linestream(line);
       while (linestream >> value) {
-        // save startime for procee
+        // save startime for process
         if (counter == 22) {
           starttime = stol(value);
           break;
@@ -323,6 +352,11 @@ long LinuxParser::UpTime(int pid) {
       }
     }
   }
+
+  /*else{
+    // Throw exception to catch if file did not open
+  }*/
+
   // minus uptime of system 
   // by starttime of process (converted to seconds by dividing by number of ticks/jiffies per second)
   // to get uptime of process
