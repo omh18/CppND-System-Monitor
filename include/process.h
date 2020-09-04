@@ -11,9 +11,11 @@ class Process {
  public:
   //constructor
   Process(int Pid_);
+  /* //Deprecated, see src/process.cpp:26 for more
   // update existing pid member variables
   // Use previous values of Jiffies to produce deltas and get a more current value for CPU usage of process
   void Update();
+  */
   int Pid();                               // TODO: See src/process.cpp
   std::string User();                      // TODO: See src/process.cpp
   std::string Command();                   // TODO: See src/process.cpp
@@ -27,7 +29,7 @@ class Process {
   std::string User_, Command_, Ram_;
   float CpuUtilization_;
   int Pid_;
-  int long UpTime_, prevAJiffies_;
+  int long UpTime_;//, prevAJiffies_; <-- Uncomment if Update() works
 };
 
 #endif
