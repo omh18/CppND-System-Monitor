@@ -49,7 +49,7 @@ vector<Process>& System::Processes() {
       // It appears that some processes expire in between call to LinuxParser::Pids(), and this code
       // Hence, exceptions (where [pid] file no longer exists) are caught, using a std::invalid_argument exception added in code
       // These processes are then skipped, i.e. not added to System::processes_
-      // Lead to a std::bad_alloc, SIGABRT or SIGSEV error
+      // Leads to a std::bad_alloc, SIGABRT or SIGSEV error otherwise
       try{
       	Process process(pid);
         processes.push_back(process);
